@@ -1,0 +1,9 @@
+{
+  "name": "Rememberer",
+  "version": "1.0",
+  "description": "Learn language by learning phrases on YouTube",
+  "icons":{
+    "128":"icon-128.png"
+  },
+  "manifest_version": 2
+}
