@@ -2,8 +2,14 @@
   "name": "Rememberer",
   "version": "1.0",
   "description": "Learn language by learning phrases on YouTube",
-  "icons":{
+  "icons": {
     "128":"icon-128.png"
   },
+  "browser_action": {},
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "permissions": [],
   "manifest_version": 2
 }
