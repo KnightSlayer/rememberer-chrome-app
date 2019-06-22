@@ -1,0 +1,28 @@
+{
+  "name": "rememberer-chrome-app",
+  "version": "1.0.0",
+  "description": "Learn foreign languages listening as me",
+  "main": "manifest.json",
+  "scripts": {
+    "start": "svelte compile src/Main.svelte > dist/main.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KnightSlayer/rememberer-chrome-app.git"
+  },
+  "keywords": [
+    "learning",
+    "language",
+    "listening"
+  ],
+  "author": "Edgar Abgaryan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KnightSlayer/rememberer-chrome-app/issues"
+  },
+  "homepage": "https://github.com/KnightSlayer/rememberer-chrome-app#readme",
+  "dependencies": {
+    "svelte-cli": "^3.0.0"
+  }
+}
