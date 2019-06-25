@@ -1,5 +1,6 @@
 const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 
 const path = require('path');
 const WebpackNotifierPlugin = require('webpack-notifier');
@@ -10,20 +11,41 @@ const __PROD__ = process.env.NODE_ENV === 'production';
 
 const rootDir = path.resolve(__dirname, '..');
 const srcDir = path.resolve(rootDir, 'src');
+const distDir = path.resolve(rootDir, 'dist');
+
+const entryPoints = {
+  ['page.main']: [
+    path.resolve(srcDir, 'pages', 'main', 'index.js'),
+  ],
+  ['src.background']: [
+    path.resolve(srcDir, 'background', 'background.js'),
+  ]
+};
+
+const PagesHtmlPlugin = new CopyPlugin(
+  Object.keys(entryPoints).reduce( (res, entryKey) => {
+    const [type, name] = entryKey.split('.');
+
+    if (type === 'page') {
+      res.push({
+        from: path.resolve(srcDir, 'pages', name, `${name}.html`),
+        to: path.resolve(distDir, 'pages', name, `${name}.html`),
+      })
+    }
+
+    return res;
+  }, [])
+);
 
 const config = {
   mode: process.env.NODE_ENV,
-  entry: {
-    main: [
-      path.resolve(srcDir, 'pages', 'Main.svelte'),
-    ],
-    background: [
-      path.resolve(srcDir, 'background', 'background.js'),
-    ]
-  },
+  entry: entryPoints,
   output: {
-    path: path.resolve(rootDir, 'dist'),
-    filename: '[name].js',
+    path: distDir,
+    filename: (chunkData) => {
+      const [type, name] = chunkData.chunk.name.split('.');
+      return type === 'page' ? `pages/${name}/${name}.js`: `${name}.js`;
+    },
   },
   devtool: 'inline-source-map',
   resolve: {
@@ -52,6 +74,14 @@ const config = {
     ]
   },
   plugins: [
+    PagesHtmlPlugin,
+    new CopyPlugin([{
+      from: path.resolve(srcDir, 'manifest.json'),
+      to: path.resolve(distDir, 'manifest.json'),
+    }, {
+      from: path.resolve(srcDir, 'assets'),
+      to: path.resolve(distDir, 'assets'),
+    }]),
     new WebpackNotifierPlugin(),
     new MiniCssExtractPlugin({
       filename: '[name].css'
