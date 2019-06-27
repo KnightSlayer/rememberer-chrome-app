@@ -12,7 +12,7 @@
   $: prhasesIds = Object.keys(phrases);
 
   chrome.storage.sync.get('phrases', function(res) {
-    phrases = res.phrases;
+    phrases = res.phrases || {};
   });
 
   function onAdd() {
