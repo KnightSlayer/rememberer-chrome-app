@@ -1,12 +1,22 @@
 <script>
+  import { generateGuid } from 'common/utils'
+
   const newItemForm = {
     origin: '',
     transaction: '',
     youtubeLink: '',
   };
 
-  function onAdd() {
+  let phrases = {};
 
+  $: prhasesIds = Object.keys(phrases);
+
+  chrome.storage.sync.get('phrases', function(res) {
+    phrases = res.phrases;
+  });
+
+  function onAdd() {
+    chrome.storage.sync.set({phrases});
   }
 </script>
 
