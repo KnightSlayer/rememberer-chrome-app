@@ -1,5 +1,6 @@
 <script>
   import { generateGuid } from 'common/utils'
+  import Phrase from './Phrase.svelte';
 
   const newItemForm = {
     origin: '',
@@ -54,11 +55,7 @@
 
   <ul>
   {#each prhasesIds as phraseId}
-    <li>
-      <div> {phrases[phraseId].origin} </div>
-      <div> {phrases[phraseId].transaction} </div>
-      <div> {phrases[phraseId].youtubeLink} </div>
-    </li>
+    <Phrase phraseId={phraseId} phrase={phrases[phraseId]}/>
   {/each}
   </ul>
 </div>
