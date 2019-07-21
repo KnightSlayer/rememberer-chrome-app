@@ -6,6 +6,16 @@
     origin: '',
     transaction: '',
     youtubeLink: '',
+    highlights: [
+/*
+      {
+        origin: [{from: 54, length: 14} ],
+        transaction: [{from: 51, length: 9} ],
+        color: 21,
+      }
+
+*/
+    ]
   };
 
   let phrases = {};
@@ -22,7 +32,6 @@
       ...phrases,
       [generateGuid()]: {
         ...newItemForm,
-        selections: [],
       }
     };
     chrome.storage.sync.set({phrases});
@@ -39,7 +48,7 @@
   <form on:submit|preventDefault={onAdd}>
     <label>
       Origin:
-      <textarea bind:value={newItemForm.origin}/>
+      <textarea bind:value={newItemForm.origin}></textarea>
     </label>
     <label>
       Translation:
