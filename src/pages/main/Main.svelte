@@ -41,7 +41,12 @@
 </script>
 
 <style>
+  .ul {
+    margin: 0.5em auto 0 auto;
+    padding: 0;
 
+    max-width: 88em;
+  }
 </style>
 
 <div>
@@ -62,7 +67,7 @@
     <button> Add new phrase </button>
   </form>
 
-  <ul>
+  <ul class="ul">
   {#each prhasesIds as phraseId}
     <Phrase phraseId={phraseId} phrase={phrases[phraseId]}/>
   {/each}

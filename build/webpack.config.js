@@ -63,7 +63,7 @@ const config = {
         use: {
           loader: 'svelte-loader',
           options: {
-            emitCss: true,
+            // emitCss: true,
           }
         }
       },
