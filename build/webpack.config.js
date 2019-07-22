@@ -68,6 +68,10 @@ const config = {
         }
       },
       {
+        test: /\.mjs$/,
+        type: "javascript/auto",
+      },
+      {
         test: /\.css$/,
         use: [MiniCssExtractPlugin.loader, 'css-loader'],
       }

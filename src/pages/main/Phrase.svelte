@@ -6,6 +6,12 @@
 
   function deletePhrase() {
     console.log('delete', phraseId)
+
+    chrome.storage.sync.get('phrases', function(res) {
+      delete res.phrases[phraseId];
+
+      chrome.storage.sync.set({phrases: res.phrases});
+    });
   }
 </script>
 
