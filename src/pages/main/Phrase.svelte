@@ -1,17 +1,13 @@
 <script>
+  import {phrases} from 'stores/phrases'
+
   export let phraseId;
   export let phrase;
 
   let isVideoOpen = false;
 
   function deletePhrase() {
-    console.log('delete', phraseId)
-
-    chrome.storage.sync.get('phrases', function(res) {
-      delete res.phrases[phraseId];
-
-      chrome.storage.sync.set({phrases: res.phrases});
-    });
+    phrases.delete(phraseId);
   }
 </script>
 

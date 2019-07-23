@@ -1,6 +1,5 @@
 <script>
   import {phrases} from 'stores/phrases'
-  import { generateGuid } from 'common/utils'
 
   const newItemForm = {
     origin: '',
@@ -20,10 +19,7 @@
 
 
   function onAdd() {
-    phrases.set({
-      [generateGuid()]: {...newItemForm},
-      ...$phrases
-    });
+    phrases.add(newItemForm);
 
     newItemForm.origin = newItemForm.transaction = newItemForm.youtubeLink = '';
   }
