@@ -1,13 +1,21 @@
 <script>
   import {phrases} from 'stores/phrases'
-  import { onMount } from 'svelte';
+  import PhraseTextField from './PhraseTextField.svelte'
 
   export let phraseId;
   export let phrase;
 
-  let isVideoOpen = false;
+  const MODES = {
+    DORMANCY: 1,
+    ORIGIN: 2,
+    TRANSLATION: 3,
+  };
 
-  onMount(() => console.log('mount !!!'))
+  const state = {
+    mode: MODES.DORMANCY,
+    isVideoOpen: false,
+  };
+
 
   function deletePhrase() {
     phrases.delete(phraseId);
@@ -43,8 +51,10 @@
 </style>
 
 <li class="phrase">
-  <div class="item"> {phrase.origin} </div>
-  <div class="item"> {phrase.transaction} </div>
-  <iframe class="item {isVideoOpen ? '' : 'collapse'}" title="YouTube" src={phrase.youtubeLink}></iframe>
+  <PhraseTextField class="item" text={phrase.origin} selections=""/>
+
+  <PhraseTextField class="item" text={phrase.transaction} selections=""/>
+
+  <iframe class="item {state.isVideoOpen ? '' : 'collapse'}" title="YouTube" src={phrase.youtubeLink}></iframe>
   <div on:click={deletePhrase} class="item action"> Delete </div>
 </li>
