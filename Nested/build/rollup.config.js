@@ -3,6 +3,7 @@ import resolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
 import { terser } from 'rollup-plugin-terser';
 import copy from 'rollup-plugin-copy'
+import htmlTemplate from 'rollup-plugin-generate-html-template';
 
 import fs from 'fs';
 import path from 'path';
@@ -20,7 +21,7 @@ export default new Promise(resolvePromise => {
           sourcemap: true,
           format: 'iife',
           name: 'app',
-          file: `dist/pages/${page}/index.js`,
+          file: `dist/pages/${page}/${page}.js`,
         },
         plugins: [
           svelte({
@@ -30,7 +31,6 @@ export default new Promise(resolvePromise => {
             //   css.write('public/bundle.css');
             // }
           }),
-
           resolve({
             browser: true,
             dedupe: importee => importee === 'svelte' || importee.startsWith('svelte/'),
@@ -39,6 +39,10 @@ export default new Promise(resolvePromise => {
             }
           }),
           commonjs(),
+          htmlTemplate({
+            template: 'src/pages/template.html',
+            target: `${page}.html`,
+          }),
 
           // If we're building for production (npm run build
           // instead of npm run dev), minify
