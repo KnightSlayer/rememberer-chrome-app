@@ -63,6 +63,7 @@ export default new Promise(resolvePromise => {
         copy({
           targets: [
             { src: 'src/assets', dest: 'dist' },
+            { src: 'src/manifest.json', dest: 'dist' },
           ]
         }),
       ],
