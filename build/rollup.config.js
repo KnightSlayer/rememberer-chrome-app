@@ -10,11 +10,12 @@ import path from 'path';
 
 const production = !process.env.ROLLUP_WATCH;
 
-
 export default new Promise(resolvePromise => {
-  fs.readdir(path.join('..', 'src', 'pages'), (err, pages) => {
+  fs.readdir(path.join(__dirname, '..', 'src', 'pages'), (err, pages) => {
 
-    const configs = pages.map(page => {
+    const configs = pages
+      .filter(s => !/\./.test(s)) // only folders
+      .map(page => {
       const config = {
         input: `src/pages/${page}/index.js`,
         output: {

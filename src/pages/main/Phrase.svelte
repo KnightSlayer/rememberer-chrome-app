@@ -1,10 +1,13 @@
 <script>
   import {phrases} from 'stores/phrases'
+  import { onMount } from 'svelte';
 
   export let phraseId;
   export let phrase;
 
   let isVideoOpen = false;
+
+  onMount(() => console.log('mount !!!'))
 
   function deletePhrase() {
     phrases.delete(phraseId);
