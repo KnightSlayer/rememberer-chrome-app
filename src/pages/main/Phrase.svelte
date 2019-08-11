@@ -51,9 +51,9 @@
 </style>
 
 <li class="phrase">
-  <PhraseTextField class="item" text={phrase.origin} selections=""/>
+  <PhraseTextField text={phrase.origin} highlights={phrase.highlights}/>
 
-  <PhraseTextField class="item" text={phrase.transaction} selections=""/>
+  <PhraseTextField text={phrase.transaction} highlights={phrase.highlights}/>
 
   <iframe class="item {state.isVideoOpen ? '' : 'collapse'}" title="YouTube" src={phrase.youtubeLink}></iframe>
   <div on:click={deletePhrase} class="item action"> Delete </div>

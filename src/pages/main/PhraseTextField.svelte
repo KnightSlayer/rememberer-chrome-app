@@ -1,4 +1,5 @@
 <script>
+    // hsl ([0-360], 99, 69)
     export let text;
     export let selections;
 
@@ -6,14 +7,20 @@
 
     const selectionHandler = () => {
         const selection = document.getSelection();
-        const { anchorNode, baseNode, extentNode, focusNode } = selection;
-        const selectionNodes = [anchorNode, baseNode, extentNode, focusNode];
+        const { anchorNode, focusNode, isCollapsed, anchorOffset, focusOffset } = selection;
 
-        const isSelectionInThisElement = selectionNodes.every(node => thisEl.contains(node));
-        console.log(isSelectionInThisElement)
-        // console.log(document.getSelection());
+        if (isCollapsed) return;
+
+        const [startPos, finishPos] = anchorOffset > focusOffset ? [focusOffset, anchorOffset] : [anchorOffset, focusOffset];
+
+        const selectionNodes = [anchorNode, focusNode];
+
+        const isSelectionInThisElement = selectionNodes.every(node => node.parentElement === thisEl);
+
         if (isSelectionInThisElement) {
-            console.log(selection.toString())
+            console.log(selection, selection.toString());
+            console.log('start at ', startPos);
+            console.log('length is ', finishPos - startPos);
         }
     };
 
