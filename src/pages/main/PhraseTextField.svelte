@@ -2,10 +2,19 @@
     // hsl ([0-360], 99, 69)
     export let text;
     export let selections;
+    export let currentSelections;
+    export let onSelect;
 
     let thisEl;
 
+    const state = {
+      from: null,
+      length: null,
+    };
+
     const selectionHandler = () => {
+        state.from = state.length = null;
+
         const selection = document.getSelection();
         const { anchorNode, focusNode, isCollapsed, anchorOffset, focusOffset } = selection;
 
@@ -21,11 +30,21 @@
             console.log(selection, selection.toString());
             console.log('start at ', startPos);
             console.log('length is ', finishPos - startPos);
+            state.from = startPos;
+            state.length = finishPos - startPos;
         }
     };
 
     const onFocus = () => document.addEventListener('selectionchange', selectionHandler);
     const onBlur = () => document.removeEventListener('selectionchange', selectionHandler);
+    const onEnter = (e) => {
+        if (e.key !== 'Enter') return;
+        if (!state.from || !state.length) return;
+
+        console.log('Select it');
+
+        onSelect(state);
+    }
 </script>
 
 <style>
@@ -45,6 +64,7 @@
      tabindex="0"
      on:focus={onFocus}
      on:blur={onBlur}
+     on:keydown={onEnter}
      class="item"
 >
   { text }

@@ -14,8 +14,29 @@
   const state = {
     mode: MODES.DORMANCY,
     isVideoOpen: false,
+    currentSelections: {
+      origin: null,
+      translation: null,
+    },
   };
 
+  function onSelect(who, {from, length}) {
+    console.log('onSelect', who, {from, length});
+    state.currentSelections[who] = {from, length};
+
+    if (state.currentSelections.origin && state.currentSelections.translation) {
+      console.log('Ura!')
+    }
+  }
+
+  function onEsc(e) {
+    if (e.key !== 'Escape') return;
+
+    state.currentSelections = {
+      origin: null,
+      translation: null,
+    };
+  }
 
   function deletePhrase() {
     phrases.delete(phraseId);
@@ -50,10 +71,18 @@
   }
 </style>
 
-<li class="phrase">
-  <PhraseTextField text={phrase.origin} highlights={phrase.highlights}/>
+<li class="phrase" on:keydown={onEsc}>
+  <PhraseTextField text={phrase.origin}
+                   highlights={phrase.highlights}
+                   currentSelections={state.currentSelections.origin}
+                   onSelect={(p) => onSelect('origin', p)}
+  />
 
-  <PhraseTextField text={phrase.transaction} highlights={phrase.highlights}/>
+  <PhraseTextField text={phrase.transaction}
+                   highlights={phrase.highlights}
+                   currentSelections={state.currentSelections.translation}
+                   onSelect={(p) => onSelect('translation', p)}
+  />
 
   <iframe class="item {state.isVideoOpen ? '' : 'collapse'}" title="YouTube" src={phrase.youtubeLink}></iframe>
   <div on:click={deletePhrase} class="item action"> Delete </div>
