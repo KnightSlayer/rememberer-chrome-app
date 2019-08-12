@@ -12,6 +12,58 @@
       length: null,
     };
 
+
+    const TEXT_TYPE = {
+      PLAIN: 'PLAIN',
+      HIGHLIGHT:  'HIGHLIGHT',
+    };
+    const getTextModel = (currentSelections) => {
+        console.log('currentSelections', currentSelections)
+        if (!currentSelections) {
+            return [{
+                type: TEXT_TYPE.PLAIN,
+                text,
+            }];
+        }
+
+        const model = [];
+        let i = 0;
+        let rest = text;
+
+// for cycle start
+        if (currentSelections.from > i) {
+            const plainPart = rest.slice(0, currentSelections.from);
+            model.push({
+                type: TEXT_TYPE.PLAIN,
+                text: plainPart,
+            });
+
+            i += currentSelections.from;
+            rest = rest.slice(i);
+        }
+
+        model.push({
+            type: TEXT_TYPE.HIGHLIGHT,
+            text: rest.slice(0, currentSelections.length),
+        });
+
+        i += currentSelections.length;
+        rest = rest.slice(i);
+// for cycle end
+
+        if (rest) {
+            model.push({
+                type: TEXT_TYPE.PLAIN,
+                text: rest,
+            });
+        }
+
+        return model;
+    };
+    $: texetModel = getTextModel(currentSelections);
+
+    const getText = () => text;
+
     const selectionHandler = () => {
         state.from = state.length = null;
 
@@ -27,9 +79,9 @@
         const isSelectionInThisElement = selectionNodes.every(node => node.parentElement === thisEl);
 
         if (isSelectionInThisElement) {
-            console.log(selection, selection.toString());
-            console.log('start at ', startPos);
-            console.log('length is ', finishPos - startPos);
+            // console.log(selection, selection.toString());
+            // console.log('start at ', startPos);
+            // console.log('length is ', finishPos - startPos);
             state.from = startPos;
             state.length = finishPos - startPos;
         }
@@ -58,6 +110,9 @@
     .item + .item {
         margin-left: 1em;
     }
+    .currentSelection {
+        background: hsl(250, 69%, 69%);
+    }
 </style>
 
 <div bind:this="{thisEl}"
@@ -67,5 +122,13 @@
      on:keydown={onEnter}
      class="item"
 >
-  { text }
+<!--  { getText() }-->
+    {#each texetModel as piece}
+        {#if piece.type === TEXT_TYPE.PLAIN}
+            { piece.text }
+        {/if}
+        {#if piece.type === TEXT_TYPE.HIGHLIGHT}
+            <span class="currentSelection"> { piece.text } </span>
+        {/if}
+    {/each}
 </div>
