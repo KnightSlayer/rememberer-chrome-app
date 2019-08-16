@@ -18,48 +18,45 @@
       HIGHLIGHT:  'HIGHLIGHT',
     };
     const getTextModel = (currentSelections, text) => {
-        console.log('currentSelections', currentSelections)
         if (!currentSelections) {
             return [{
                 type: TEXT_TYPE.PLAIN,
                 text,
             }];
         }
+        console.log('currentSelections', currentSelections)
 
         const model = [];
         let i = 0;
-        let rest = text;
 
 // for cycle start
         if (currentSelections.from > i) {
-            const plainPart = rest.slice(0, currentSelections.from);
+            const plainPart = text.slice(i, currentSelections.from);
             model.push({
                 type: TEXT_TYPE.PLAIN,
                 text: plainPart,
             });
 
             i += currentSelections.from;
-            rest = rest.slice(i);
         }
 
         model.push({
             type: TEXT_TYPE.HIGHLIGHT,
-            text: rest.slice(0, currentSelections.length),
+            text: text.slice(i, i + currentSelections.length),
         });
 
         i += currentSelections.length;
-        rest = rest.slice(i);
 // for cycle end
 
-        if (rest) {
+        if (i < text.length) {
             model.push({
                 type: TEXT_TYPE.PLAIN,
-                text: rest,
+                text: text.slice(i),
             });
         }
-
         return model;
     };
+
     $: texetModel = getTextModel(currentSelections, text);
 
     const selectionHandler = () => {
