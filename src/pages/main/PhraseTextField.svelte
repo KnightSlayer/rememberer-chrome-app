@@ -17,7 +17,7 @@
       PLAIN: 'PLAIN',
       HIGHLIGHT:  'HIGHLIGHT',
     };
-    const getTextModel = (currentSelections) => {
+    const getTextModel = (currentSelections, text) => {
         console.log('currentSelections', currentSelections)
         if (!currentSelections) {
             return [{
@@ -60,9 +60,7 @@
 
         return model;
     };
-    $: texetModel = getTextModel(currentSelections);
-
-    const getText = () => text;
+    $: texetModel = getTextModel(currentSelections, text);
 
     const selectionHandler = () => {
         state.from = state.length = null;
@@ -122,7 +120,6 @@
      on:keydown={onEnter}
      class="item"
 >
-<!--  { getText() }-->
     {#each texetModel as piece}
         {#if piece.type === TEXT_TYPE.PLAIN}
             { piece.text }
