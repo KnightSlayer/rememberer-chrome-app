@@ -106,7 +106,7 @@
     const onBlur = () => document.removeEventListener('selectionchange', selectionHandler);
     const onEnter = (e) => {
         if (e.key !== 'Enter') return;
-        if (!state.from || !state.length) return;
+        if (state.from === null || !state.length) return;
 
         console.log('Select it');
 
