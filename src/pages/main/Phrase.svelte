@@ -58,6 +58,12 @@
   .item + .item {
     margin-left: 1em;
   }
+  .phrase + .phrase {
+      margin-top: 0.7em;
+  }
+  .youtube {
+      flex-grow: 0;
+  }
   .collapse {
     max-height: 3em;
     max-width: 5em;
@@ -86,6 +92,8 @@
                    onSelect={(p) => onSelect('translation', p)}
   />
 
-  <iframe class="item {state.isVideoOpen ? '' : 'collapse'}" title="YouTube" src={phrase.youtubeLink}></iframe>
+  <div class="item youtube">
+    <iframe class="{state.isVideoOpen ? '' : 'collapse'}" title="YouTube" src={phrase.youtubeLink}></iframe>
+  </div>
   <div on:click={deletePhrase} class="item action"> Delete </div>
 </li>
