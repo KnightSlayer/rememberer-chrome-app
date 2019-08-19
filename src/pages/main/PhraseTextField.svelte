@@ -57,7 +57,27 @@
         return model;
     };
 
-    $: texetModel = getTextModel(currentSelections, text);
+    $: textModel = getTextModel(currentSelections, text);
+
+    const getTextHtml = (textModel) => {
+        let html = '';
+
+        for (const item of textModel) {
+            switch (item.type) {
+                case TEXT_TYPE.PLAIN: {
+                    html += item.text;
+                    break;
+                }
+                case TEXT_TYPE.HIGHLIGHT: {
+                    html += `<span style="background: hsl(250, 69%, 69%);">${item.text}</span>`;
+                    break;
+                }
+            }
+        }
+
+        return html;
+    };
+    $: textHtml = getTextHtml(textModel)
 
     const selectionHandler = () => {
         state.from = state.length = null;
@@ -99,6 +119,7 @@
         border: 1px solid #333;
         border-radius: 3px;
         padding: 0.5em;
+        white-space: pre-wrap;
 
         flex: 1 1;
     }
@@ -106,6 +127,7 @@
         margin-left: 1em;
     }
     .currentSelection {
+        /*display: inline-block;*/
         background: hsl(250, 69%, 69%);
     }
 </style>
@@ -117,12 +139,13 @@
      on:keydown={onEnter}
      class="item"
 >
-    {#each texetModel as piece}
-        {#if piece.type === TEXT_TYPE.PLAIN}
-            { piece.text }
-        {/if}
-        {#if piece.type === TEXT_TYPE.HIGHLIGHT}
-            <span class="currentSelection"> { piece.text } </span>
-        {/if}
-    {/each}
+    {@html textHtml}
+<!--    {#each textModel as piece}-->
+<!--        {#if piece.type === TEXT_TYPE.PLAIN}-->
+<!--            { piece.text }-->
+<!--        {/if}-->
+<!--        {#if piece.type === TEXT_TYPE.HIGHLIGHT}-->
+<!--            <span class="currentSelection"> { piece.text } </span>-->
+<!--        {/if}-->
+<!--    {/each}-->
 </div>
