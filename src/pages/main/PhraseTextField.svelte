@@ -4,6 +4,7 @@
     export let selections;
     export let currentSelections;
     export let onSelect;
+    export let highlights;
 
     let thisEl;
 
@@ -35,7 +36,6 @@
                 text,
             }];
         }
-        console.log('currentSelections', currentSelections)
 
         const model = [];
         let i = 0;
@@ -76,7 +76,7 @@
         for (const item of textModel) {
             switch (item.type) {
                 case TEXT_TYPE.PLAIN: {
-                    html += item.text;
+                    html += `<span>${item.text}</span>`;
                     break;
                 }
                 case TEXT_TYPE.HIGHLIGHT: {
@@ -88,7 +88,7 @@
 
         return html;
     };
-    $: textHtml = getTextHtml(textModel)
+    $: textHtml = getTextHtml(textModel);
 
     const selectionHandler = () => {
         state.from = state.length = null;
@@ -102,13 +102,10 @@
 
         const selectionNodes = [anchorNode, focusNode];
 
-        const isSelectionInThisElement = selectionNodes.every(node => node.parentElement === thisEl);
+        const isSelectionInThisElement = selectionNodes.every(node => node.parentElement.parentElement === thisEl);
 
-        if (isSelectionInThisElement) {
-            // console.log(selection, selection.toString());
-            // console.log('start at ', startPos);
-            // console.log('length is ', finishPos - startPos);
-            state.from = getPreviousSiblingsTextLength(anchorNode) + startPos;
+        if (isSelectionInThisElement && anchorNode === focusNode) {
+            state.from = getPreviousSiblingsTextLength(anchorNode.parentElement) + startPos;
             state.length = finishPos - startPos;
         }
     };

@@ -75,12 +75,14 @@
   <PhraseTextField text={phrase.origin}
                    highlights={phrase.highlights}
                    currentSelections={state.currentSelections.origin}
+                   selections={null}
                    onSelect={(p) => onSelect('origin', p)}
   />
 
   <PhraseTextField text={phrase.transaction}
                    highlights={phrase.highlights}
                    currentSelections={state.currentSelections.translation}
+                   selections={null}
                    onSelect={(p) => onSelect('translation', p)}
   />
 
