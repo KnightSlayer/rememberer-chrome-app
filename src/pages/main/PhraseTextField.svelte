@@ -17,6 +17,17 @@
       PLAIN: 'PLAIN',
       HIGHLIGHT:  'HIGHLIGHT',
     };
+    const getPreviousSiblingsTextLength = (node) => {
+        let res = 0;
+        let prev = node.previousSibling;
+
+        while (prev) {
+            res += prev.textContent.length;
+            prev = prev.previousSibling;
+        }
+
+        return res;
+    };
     const getTextModel = (currentSelections, text) => {
         if (!currentSelections) {
             return [{
@@ -97,7 +108,7 @@
             // console.log(selection, selection.toString());
             // console.log('start at ', startPos);
             // console.log('length is ', finishPos - startPos);
-            state.from = startPos;
+            state.from = getPreviousSiblingsTextLength(anchorNode) + startPos;
             state.length = finishPos - startPos;
         }
     };
