@@ -3,13 +3,13 @@
 
   const newItemForm = {
     origin: '',
-    transaction: '',
+    translation: '',
     youtubeLink: '',
     highlights: [
       /*
             {
               origin: [{from: 54, length: 14} ],
-              transaction: [{from: 51, length: 9} ],
+              translation: [{from: 51, length: 9} ],
               color: 21,
             }
 
@@ -21,7 +21,7 @@
   function onAdd() {
     phrases.add(newItemForm);
 
-    newItemForm.origin = newItemForm.transaction = newItemForm.youtubeLink = '';
+    newItemForm.origin = newItemForm.translation = newItemForm.youtubeLink = '';
   }
 
 </script>
@@ -38,7 +38,7 @@
   </label>
   <label>
     Translation:
-    <textarea bind:value={newItemForm.transaction}></textarea>
+    <textarea bind:value={newItemForm.translation}></textarea>
   </label>
   <label>
     Youtube Time Link:

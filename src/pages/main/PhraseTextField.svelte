@@ -80,7 +80,7 @@
                     break;
                 }
                 case TEXT_TYPE.HIGHLIGHT: {
-                    html += `<span style="background: hsl(250, 69%, 69%);">${item.text}</span>`;
+                    html += `<span class="currentSelection">${item.text}</span>`;
                     break;
                 }
             }
@@ -116,13 +116,21 @@
         if (e.key !== 'Enter') return;
         if (state.from === null || !state.length) return;
 
-        console.log('Select it');
-
         onSelect(state);
     }
 </script>
 
 <style>
+    :global(.currentSelection) {
+        /*background: hsl(150, 69%, 69%);*/
+        animation: 1.4s ease-in blink infinite;
+    }
+
+    @keyframes blink {
+        from { background: hsl(200, 69%, 69%); }
+        50% { background: hsl(200, 69%, 89%); }
+        to { background: hsl(200, 69%, 69%); }
+    }
     .item {
         border: 1px solid #333;
         border-radius: 3px;
@@ -134,10 +142,10 @@
     .item + .item {
         margin-left: 1em;
     }
-    .currentSelection {
-        /*display: inline-block;*/
-        background: hsl(250, 69%, 69%);
-    }
+    /*.currentSelection {*/
+    /*    !*display: inline-block;*!*/
+    /*    background: hsl(250, 69%, 69%);*/
+    /*}*/
 </style>
 
 <div bind:this="{thisEl}"
