@@ -1,6 +1,20 @@
 import { writable } from 'svelte/store';
 import { generateGuid } from 'common/utils'
 
+/*
+    const newItemForm = {
+      origin: '',
+      translation: '',
+      youtubeLink: '',
+      highlights: [
+          {
+            origin: {from: 54, length: 14},
+            translation: {from: 51, length: 9},
+            color: 21,
+          },
+      ],
+    };
+*/
 
 function createPhrases() {
   const { subscribe, set, update } = writable({});
@@ -30,7 +44,44 @@ function createPhrases() {
 
       return newPhrases;
     }),
+    addHighlight: (id, highlight) => update(phrases => {
+      // TODO: validate
+      const newPhrases = {
+        ...phrases,
+        [id]: {
+          ...phrases[id],
+          highlights: [...phrases[id].highlights, highlight],
+        },
+      };
+
+      chrome.storage.sync.set({phrases: newPhrases});
+      return newPhrases;
+    }),
   };
 }
 
 export const phrases = createPhrases();
+
+export const sortHighlights = (highlights) => {
+  const separatedHighlights = highlights.reduce((acc, hl) => {
+    acc.origin.push({
+      ...hl.origin,
+      color: hl.color,
+    });
+
+    acc.translation.push({
+      ...hl.translation,
+      color: hl.color,
+    });
+
+    return acc;
+  }, {origin:[],translation:[]});
+
+  // TODO: нужна ли сортировка именно тут???
+  separatedHighlights.origin.sort((a, b) => a.length - b.length);
+  separatedHighlights.translation.sort((a, b) => a.length - b.length);
+
+  return separatedHighlights;
+};
+
+export default phrases

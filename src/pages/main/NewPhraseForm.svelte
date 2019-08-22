@@ -1,5 +1,5 @@
 <script>
-  import {phrases} from 'stores/phrases'
+  import phrases from 'stores/phrases'
 
   const newItemForm = {
     origin: '',

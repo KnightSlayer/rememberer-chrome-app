@@ -1,5 +1,5 @@
 <script>
-  import {phrases} from 'stores/phrases'
+  import phrases, {sortHighlights} from 'stores/phrases'
   import PhraseTextField from './PhraseTextField.svelte'
 
   export let phraseId;
@@ -20,12 +20,20 @@
     },
   };
 
+  $: sortedHighlights = sortHighlights(phrase.highlights);
+
   function onSelect(who, {from, length}) {
-    console.log('onSelect', who, {from, length});
     state.currentSelections[who] = {from, length};
 
     if (state.currentSelections.origin && state.currentSelections.translation) {
-      console.log('Ura!')
+      console.log('Ura!');
+      const color = Math.ceil(Math.random() * 360);
+
+      phrases.addHighlight(phraseId, {
+        origin: {...state.currentSelections.origin},
+        translation: {...state.currentSelections.translation},
+        color,
+      });
     }
   }
 
@@ -79,14 +87,14 @@
 
 <li class="phrase" on:keydown={onEsc}>
   <PhraseTextField text={phrase.origin}
-                   highlights={phrase.highlights}
+                   highlights={sortedHighlights.origin}
                    currentSelections={state.currentSelections.origin}
                    selections={null}
                    onSelect={(p) => onSelect('origin', p)}
   />
 
-  <PhraseTextField text={phrase.transaction}
-                   highlights={phrase.highlights}
+  <PhraseTextField text={phrase.translation}
+                   highlights={sortedHighlights.translation}
                    currentSelections={state.currentSelections.translation}
                    selections={null}
                    onSelect={(p) => onSelect('translation', p)}

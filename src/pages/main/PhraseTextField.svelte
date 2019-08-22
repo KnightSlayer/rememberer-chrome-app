@@ -1,5 +1,4 @@
 <script>
-    // hsl ([0-360], 99, 69)
     export let text;
     export let selections;
     export let currentSelections;
@@ -29,35 +28,36 @@
 
         return res;
     };
-    const getTextModel = (currentSelections, text) => {
-        if (!currentSelections) {
-            return [{
-                type: TEXT_TYPE.PLAIN,
-                text,
-            }];
+    const getTextModel = (highlights, currentSelections, text) => {
+        const allHighlights = [...highlights];
+
+        if (currentSelections) {
+            allHighlights.push(currentSelections);
+            allHighlights.sort((a, b) => a.length - b.length);
         }
 
         const model = [];
         let i = 0;
 
-// for cycle start
-        if (currentSelections.from > i) {
-            const plainPart = text.slice(i, currentSelections.from);
+        for (const hl of allHighlights) {
+            if (hl.from > i) {
+                const plainPart = text.slice(i, hl.from);
+                model.push({
+                    type: TEXT_TYPE.PLAIN,
+                    text: plainPart,
+                });
+
+                i = hl.from;
+            }
+
             model.push({
-                type: TEXT_TYPE.PLAIN,
-                text: plainPart,
+                type: TEXT_TYPE.HIGHLIGHT,
+                text: text.slice(i, i + hl.length),
+                color: hl.color,
             });
 
-            i += currentSelections.from;
+            i += hl.length;
         }
-
-        model.push({
-            type: TEXT_TYPE.HIGHLIGHT,
-            text: text.slice(i, i + currentSelections.length),
-        });
-
-        i += currentSelections.length;
-// for cycle end
 
         if (i < text.length) {
             model.push({
@@ -68,7 +68,7 @@
         return model;
     };
 
-    $: textModel = getTextModel(currentSelections, text);
+    $: textModel = getTextModel(highlights, currentSelections, text);
 
     const getTextHtml = (textModel) => {
         let html = '';
@@ -80,7 +80,7 @@
                     break;
                 }
                 case TEXT_TYPE.HIGHLIGHT: {
-                    html += `<span class="currentSelection">${item.text}</span>`;
+                    html += `<span${item.color ? ' style="background: hsl(' + item.color + ', 69%, 69%)"' : ' class="currentSelection"'}>${item.text}</span>`;
                     break;
                 }
             }
@@ -89,6 +89,7 @@
         return html;
     };
     $: textHtml = getTextHtml(textModel);
+    $: highlights1 = console.log(' NEW   highlights', text, highlights)
 
     const selectionHandler = () => {
         state.from = state.length = null;

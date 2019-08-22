@@ -1,6 +1,6 @@
 <script>
   import Phrase from './Phrase.svelte';
-  import {phrases} from 'stores/phrases'
+  import phrases from 'stores/phrases'
 
   $: prhasesIds = Object.keys($phrases);
 
