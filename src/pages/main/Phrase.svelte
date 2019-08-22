@@ -39,12 +39,19 @@
   }
 
   function onEsc(e) {
-    if (e.key !== 'Escape') return;
-
-    state.currentSelections = {
-      origin: null,
-      translation: null,
-    };
+    switch (e.code) {
+      case 'KeyZ': {
+        console.log('Ctrl+z');
+        break;
+      }
+      case 'Escape': {
+        state.currentSelections = {
+          origin: null,
+          translation: null,
+        };
+        break;
+      }
+    }
   }
 
   function deletePhrase() {
