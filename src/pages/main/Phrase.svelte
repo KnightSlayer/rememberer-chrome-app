@@ -38,11 +38,17 @@
     }
   }
 
-  function onEsc(e) {
+  function onKeyDown(e) {
     switch (e.code) {
       case 'KeyZ': {
-        console.log('Ctrl+z');
-        break;
+        if (e.ctrlKey && e.shiftKey) {
+            console.log('Ctrl+Shift+z');
+            break;
+        }
+        if (e.ctrlKey) {
+          console.log('Ctrl+z');
+          break;
+        }
       }
       case 'Escape': {
         state.currentSelections = {
@@ -93,7 +99,7 @@
   }
 </style>
 
-<li class="phrase" on:keydown={onEsc}>
+<li class="phrase" on:keydown={onKeyDown}>
   <PhraseTextField text={phrase.origin}
                    highlights={sortedHighlights.origin}
                    currentSelections={state.currentSelections.origin}
