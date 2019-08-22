@@ -34,6 +34,8 @@
         translation: {...state.currentSelections.translation},
         color,
       });
+
+      state.currentSelections.origin = state.currentSelections.translation = null;
     }
   }
 

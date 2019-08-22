@@ -78,8 +78,8 @@ export const sortHighlights = (highlights) => {
   }, {origin:[],translation:[]});
 
   // TODO: нужна ли сортировка именно тут???
-  separatedHighlights.origin.sort((a, b) => a.length - b.length);
-  separatedHighlights.translation.sort((a, b) => a.length - b.length);
+  separatedHighlights.origin.sort((a, b) => a.from - b.from);
+  separatedHighlights.translation.sort((a, b) => a.from - b.from);
 
   return separatedHighlights;
 };

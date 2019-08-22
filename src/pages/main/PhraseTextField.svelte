@@ -33,7 +33,7 @@
 
         if (currentSelections) {
             allHighlights.push(currentSelections);
-            allHighlights.sort((a, b) => a.length - b.length);
+            allHighlights.sort((a, b) => a.from - b.from);
         }
 
         const model = [];
@@ -89,7 +89,6 @@
         return html;
     };
     $: textHtml = getTextHtml(textModel);
-    $: highlights1 = console.log(' NEW   highlights', text, highlights)
 
     const selectionHandler = () => {
         state.from = state.length = null;
