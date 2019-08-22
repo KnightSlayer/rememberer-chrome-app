@@ -26,7 +26,6 @@
     state.currentSelections[who] = {from, length};
 
     if (state.currentSelections.origin && state.currentSelections.translation) {
-      console.log('Ura!');
       const color = Math.ceil(Math.random() * 60) * 6;
 
       phrases.addHighlight(phraseId, {
