@@ -1,21 +1,7 @@
 <script>
-  import phrases from 'stores/phrases'
+  import phrases, { getBlankPhrase } from 'stores/phrases'
 
-  const newItemForm = {
-    origin: '',
-    translation: '',
-    youtubeLink: '',
-    highlights: [
-      /*
-            {
-              origin: [{from: 54, length: 14} ],
-              translation: [{from: 51, length: 9} ],
-              color: 21,
-            }
-
-      */
-    ]
-  };
+  const newItemForm = getBlankPhrase();
 
 
   function onAdd() {

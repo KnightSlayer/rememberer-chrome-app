@@ -42,11 +42,11 @@
     switch (e.code) {
       case 'KeyZ': {
         if (e.ctrlKey && e.shiftKey) {
-            console.log('Ctrl+Shift+z');
-            break;
+          phrases.forward(phraseId);
+          break;
         }
         if (e.ctrlKey) {
-          console.log('Ctrl+z');
+          phrases.back(phraseId);
           break;
         }
       }
