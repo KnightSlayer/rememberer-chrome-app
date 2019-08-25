@@ -115,7 +115,7 @@
   />
 
   <div class="item youtube">
-    <iframe class="{state.isVideoOpen ? '' : 'collapse'}" title="YouTube" src={phrase.youtubeLink}></iframe>
+<!--    <iframe class="{state.isVideoOpen ? '' : 'collapse'}" title="YouTube" src={phrase.youtubeLink}></iframe>-->
   </div>
   <div on:click={deletePhrase} class="item action"> Delete </div>
 </li>

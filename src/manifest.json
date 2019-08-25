@@ -1,9 +1,16 @@
 {
-  "name": "Rememberer",
-  "version": "2.0",
+  "name": "Rememberer (Alpha 2.3)",
+  "version": "2.3",
   "description": "Learn language by learning phrases on YouTube",
   "icons": {
     "128":"assets/icon-128.png"
+  },
+  "oauth2": {
+    "client_id": "592149717725-bbo2fofldl83g0od49rqk645p2stgat0.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/youtube.force-ssl",
+      "https://www.googleapis.com/auth/youtubepartner"
+    ]
   },
   "browser_action": {},
   "background": {
@@ -11,7 +18,7 @@
     "persistent": false
   },
   "permissions": [
-    "storage"
+    "storage", "identity"
   ],
   "manifest_version": 2
 }
