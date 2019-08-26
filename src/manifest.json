@@ -21,5 +21,6 @@
   "permissions": [
     "storage", "identity"
   ],
+  "content_security_policy": "script-src 'self' https://www.youtube.com https://s.ytimg.com; object-src 'self'",
   "manifest_version": 2
 }

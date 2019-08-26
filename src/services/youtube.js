@@ -11,17 +11,17 @@ const captureUrl = `https://www.googleapis.com/youtube/v3/captions/${captionId1}
 
 
 // We are serverless, so we need to asc users connect their account???
-chrome.identity.getAuthToken({ 'interactive': true }, function(token) {
-  fetch(captureUrl, {
-    headers: new Headers({
-      Authorization: 'Bearer ' + token,
-      Accept: 'application/json',
-    }),
-  })
-    .then(r => r.text())
-    .then(r => parseSbvCaption(r))
-    .catch(e => console.log('e',e));
-});
+// chrome.identity.getAuthToken({ 'interactive': true }, function(token) {
+//   fetch(captureUrl, {
+//     headers: new ;Headers({
+//       Authorization: 'Bearer ' + token,
+//       Accept: 'application/json',
+//     }),
+//   })
+//     .then(r => r.text())
+//     .then(r => parseSbvCaption(r))
+//     .catch(e => console.log('e',e));
+// });
 
 function parseSbvCaption(caption) {
   let res = caption.split('\n\n')
@@ -39,3 +39,61 @@ function parseSbvCaption(caption) {
 
 
 export default 21
+
+const placeholder = document.createElement('div');
+placeholder.id = "player";
+document.body.append(placeholder);
+
+
+var tag = document.createElement('script');
+// tag.onload = onYouTubeIframeAPIReady
+tag.src = "https://www.youtube.com/iframe_api";
+var firstScriptTag = document.getElementsByTagName('script')[0];
+firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+// 3. This function creates an <iframe> (and YouTube player)
+//    after the API code downloads.
+var player;
+window.onYouTubeIframeAPIReady = () => {
+  console.log('onYouTubeIframeAPIReady')
+  player = new YT.Player('player', {
+    height: '360',
+    width: '640',
+    videoId: vidoyId,
+    events: {
+      'onReady': onPlayerReady,
+      'onStateChange': onPlayerStateChange
+    }
+  });
+}
+
+// 4. The API will call this function when the video player is ready.
+function onPlayerReady(event) {
+  console.log('onPlayerReady')
+  event.target.playVideo();
+}
+
+// 5. The API calls this function when the player's state changes.
+//    The function indicates that when playing a video (state=1),
+//    the player should play for six seconds and then stop.
+var done = false;
+function onPlayerStateChange(event) {
+  console.log('onPlayerStateChange');
+  if (event.data == YT.PlayerState.PLAYING && !done) {
+    setTimeout(stopVideo, 2000);
+    done = true;
+  }
+}
+function stopVideo() {
+  console.log('stopVideo')
+  player.stopVideo();
+}
+/*
+
+https://youtu.be/uD4izuDMUQA?t=435
+
+<iframe src="https://www.youtube.com/embed/uD4izuDMUQA"
+ frameborder="0"
+ allow="accelerometer; encrypted-media; gyroscope; picture-in-picture"></iframe>
+
+ */
