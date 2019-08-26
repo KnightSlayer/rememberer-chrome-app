@@ -41,7 +41,6 @@ function parseSbvCaption(caption) {
 export default 21
 
 const placeholder = document.createElement('div');
-placeholder.id = "player";
 document.body.append(placeholder);
 
 
@@ -56,21 +55,25 @@ firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 var player;
 window.onYouTubeIframeAPIReady = () => {
   console.log('onYouTubeIframeAPIReady')
-  player = new YT.Player('player', {
-    height: '360',
-    width: '640',
+  player = new YT.Player(placeholder, {
     videoId: vidoyId,
+    playerVars: {
+      controls: 0,
+      cc_load_policy: 0,
+      iv_load_policy: 3,
+      showinfo: 0,
+      rel: 0,
+    },
     events: {
       'onReady': onPlayerReady,
       'onStateChange': onPlayerStateChange
     }
   });
-}
+};
 
 // 4. The API will call this function when the video player is ready.
 function onPlayerReady(event) {
-  console.log('onPlayerReady')
-  event.target.playVideo();
+  event.target.seekTo(550, true).playVideo();
 }
 
 // 5. The API calls this function when the player's state changes.
@@ -78,14 +81,12 @@ function onPlayerReady(event) {
 //    the player should play for six seconds and then stop.
 var done = false;
 function onPlayerStateChange(event) {
-  console.log('onPlayerStateChange');
   if (event.data == YT.PlayerState.PLAYING && !done) {
     setTimeout(stopVideo, 2000);
     done = true;
   }
 }
 function stopVideo() {
-  console.log('stopVideo')
   player.stopVideo();
 }
 /*
