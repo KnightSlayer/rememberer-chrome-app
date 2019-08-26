@@ -5,8 +5,9 @@
   "icons": {
     "128":"assets/icon-128.png"
   },
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAkGJjqNKP0cRdPe6n7JClqZd58B0ZFRJ/WqIuRy7dwSU2UAktwBkMNjFzmOG/LSLxULp7im8R3CB/TazVjNrqRR64iEUXgZ/2sRmR6za50kZVjHicZ7Lbho/NrLyj1+O0Ppu/MVqYzTUf+xKLK+YYY33w9teo/4zAfJGyRc7LeoCA5odPysWICqa1k2+qJSeOLmg2sU8PyQiSl0jqImgwj5dsmZfLqlfmxmJPNytPxdPw8+XJ+GmnbTdr1biFhyRRTbOvskXa5qzpnAA298rZYC7RKUO+nSkDMut5DnZszbYYE+cs7PUHUTgVdA6UcKQ41Q6jyp6u+Fc9oQUluRpU8wIDAQAB",
   "oauth2": {
-    "client_id": "592149717725-bbo2fofldl83g0od49rqk645p2stgat0.apps.googleusercontent.com",
+    "client_id": "592149717725-134hvk2g214rhg83sk67f93gjkk9kog1.apps.googleusercontent.com",
     "scopes": [
       "https://www.googleapis.com/auth/youtube.force-ssl",
       "https://www.googleapis.com/auth/youtubepartner"
