@@ -12,6 +12,33 @@ const getCaptureDownloadEndpoint = (captionId) => `https://www.googleapis.com/yo
 
 export const analyzeLink = (link) => {
   console.log('analyzeLink', link);
+  function parseSbvCaption(caption) {
+    function getSeconds(timeStr) {
+      const [, h, m, s] = timeStr.match(/^(\d):(\d\d):(\d\d)\.\d\d\d$/);
+
+      return +s + m*60 + h*3600;
+    }
+    let res = caption.split('\n\n')
+      .map( sub => sub.match(/(\d:\d\d:\d\d\.\d\d\d),(\d:\d\d:\d\d\.\d\d\d)\s*((.|\s)*)/))
+      .filter( matchRes => matchRes)
+      .map(matchRes => ({
+        from: getSeconds(matchRes[1]),
+        to: getSeconds(matchRes[2]),
+        text: matchRes[3].trim().replace(/\s+/g, ' '),
+      }));
+
+    return res;
+  };
+
+  function getTextByTime(caption, time) {
+    // TODO: caption is sorted, so I can use here binary search later
+    for (const sb of caption) {
+      if (time >= sb.from && time <= sb.to) {
+        return sb.text;
+      }
+    }
+  }
+
   const [, videoId, time] = link.match(/youtu\.be\/(.*)\?t=(\d+)$/);
 
   const captionsIdsPromise = fetch(getCapturesListEndpoint(videoId))
@@ -66,30 +93,27 @@ export const analyzeLink = (link) => {
       return Promise.all([downloadCaption(originCaptionId, token), downloadCaption(translationCaptionId, token)])
     })
     .then(([originCaption, translationCaption]) => {
-      console.log('originCaption', originCaption);
-      console.log('translationCaption', translationCaption);
-
-      return {videoId, time};
+      return {
+        videoId,
+        time,
+        origin: getTextByTime(originCaption, time),
+        translation: getTextByTime(translationCaption, time),
+      };
     });
 };
 
-function parseSbvCaption(caption) {
-  function getSeconds(timeStr) {
-    const [, h, m, s] = timeStr.match(/^(\d):(\d\d):(\d\d)\.\d\d\d$/);
 
-    return +s + m*60 + h*3600;
-  }
-  let res = caption.split('\n\n')
-    .map( sub => sub.match(/(\d:\d\d:\d\d\.\d\d\d),(\d:\d\d:\d\d\.\d\d\d)\s*((.|\s)*)/))
-    .filter( matchRes => matchRes)
-    .map(matchRes => ({
-      from: getSeconds(matchRes[1]),
-      // to: matchRes[2],
-      text: matchRes[3].trim().replace(/\s+/g, ' '),
-    }));
 
-  return res;
-};
+
+
+
+
+
+
+
+
+
+
 
 const getYoutubeIframeApi = () => new Promise( (resolve, reject) => {
   const tag = document.createElement('script');
