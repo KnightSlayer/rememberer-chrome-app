@@ -7,14 +7,14 @@ const captionId2 = 'iA80G5cFenkN7wCVdVBQqUh2FiJq37-mJCHN-PM7MGc='; // auto gener
 const originLang = 'en';
 const translationLang = 'ru';
 
-const capturesListUrl = `https://content.googleapis.com/youtube/v3/captions?part=snippet&videoId=${videoId}&key=${youtubeApiKey}`;
-const captureUrl = `https://www.googleapis.com/youtube/v3/captions/${captionId1}?key=${youtubeApiKey}&tfmt=sbv`;
+const getCapturesListEndpoint = (videoId) => `https://content.googleapis.com/youtube/v3/captions?part=snippet&videoId=${videoId}&key=${youtubeApiKey}`;
+const getCaptureDownloadEndpoint = (captionId) => `https://www.googleapis.com/youtube/v3/captions/${captionId}?key=${youtubeApiKey}&tfmt=sbv`;
 
 export const analyzeLink = (link) => {
   console.log('analyzeLink', link);
   const [, videoId, time] = link.match(/youtu\.be\/(.*)\?t=(\d+)$/);
 
-  const captionsListPromise = fetch(`https://content.googleapis.com/youtube/v3/captions?part=snippet&videoId=${videoId}&key=${youtubeApiKey}`)
+  const captionsIdsPromise = fetch(getCapturesListEndpoint(videoId))
     .then(r => r.json())
     .then(r => r.items)
     .then(captions => {
@@ -49,21 +49,25 @@ export const analyzeLink = (link) => {
     chrome.identity.getAuthToken({'interactive': true}, (token) => resolve(token))
   });
 
-  return Promise.all([captionsListPromise, tokenPromise])
-    .then(([{originCaptionId, translationCaptionId}, token]) => {
-      console.log('captionsList', originCaptionId, translationCaptionId)
-      console.log('token', token)
+  const downloadCaption = (captionId, token) => {
+    return fetch(getCaptureDownloadEndpoint(captionId), {
+      headers: new Headers({
+        Authorization: 'Bearer ' + token,
+        Accept: 'application/json',
+      }),
     })
-    .then(captions => {
-      // fetch(captureUrl, {
-      //   headers: new Headers({
-      //     Authorization: 'Bearer ' + token,
-      //     Accept: 'application/json',
-      //   }),
-      // })
-      //   .then(r => r.text())
-      //   .then(r => parseSbvCaption(r))
-      //   .catch(e => console.log('e',e));
+      .then(r => r.text())
+      .then(r => parseSbvCaption(r))
+  };
+
+  return Promise.all([captionsIdsPromise, tokenPromise])
+    .then(([{originCaptionId, translationCaptionId}, token]) => {
+
+      return Promise.all([downloadCaption(originCaptionId, token), downloadCaption(translationCaptionId, token)])
+    })
+    .then(([originCaption, translationCaption]) => {
+      console.log('originCaption', originCaption);
+      console.log('translationCaption', translationCaption);
 
       return {videoId, time};
     });
@@ -77,9 +81,8 @@ function parseSbvCaption(caption) {
       from: matchRes[1],
       to: matchRes[2],
       text: matchRes[3].trim().replace(/\s+/g, ' '),
-    }))
-  ;
-  console.log(typeof res, Array.isArray(res), res);
+    }));
+
   return res;
 };
 
