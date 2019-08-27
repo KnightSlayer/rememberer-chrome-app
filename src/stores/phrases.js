@@ -5,7 +5,9 @@ import { generateGuid } from 'common/utils'
 export const getBlankPhrase = () => ({
   origin: '',
   translation: '',
-  youtubeLink: '',
+  videoId: null,
+  time: null,
+  duration: 10,
   highlights: [
       // {
       //   origin: {from: 54, length: 14},
