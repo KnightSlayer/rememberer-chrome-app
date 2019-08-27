@@ -74,12 +74,17 @@ export const analyzeLink = (link) => {
 };
 
 function parseSbvCaption(caption) {
+  function getSeconds(timeStr) {
+    const [, h, m, s] = timeStr.match(/^(\d):(\d\d):(\d\d)\.\d\d\d$/);
+
+    return +s + m*60 + h*3600;
+  }
   let res = caption.split('\n\n')
     .map( sub => sub.match(/(\d:\d\d:\d\d\.\d\d\d),(\d:\d\d:\d\d\.\d\d\d)\s*((.|\s)*)/))
     .filter( matchRes => matchRes)
     .map(matchRes => ({
-      from: matchRes[1],
-      to: matchRes[2],
+      from: getSeconds(matchRes[1]),
+      // to: matchRes[2],
       text: matchRes[3].trim().replace(/\s+/g, ' '),
     }));
 
