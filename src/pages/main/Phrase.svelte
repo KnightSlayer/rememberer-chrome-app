@@ -1,6 +1,7 @@
 <script>
   import phrases, {sortHighlights} from 'stores/phrases'
   import PhraseTextField from './PhraseTextField.svelte'
+  import { initVideo } from 'services/youtube'
 
   export let phraseId;
   export let phrase;
@@ -20,6 +21,7 @@
     },
   };
 
+  let iframePlaceholder;
   $: sortedHighlights = sortHighlights(phrase.highlights);
 
   function onSelect(who, {from, length}) {
@@ -63,6 +65,10 @@
   function deletePhrase() {
     phrases.delete(phraseId);
   }
+  function playYoutube() {
+    initVideo({placeholder: iframePlaceholder, videoId: phrase.videoId, time: phrase.time, duration: phrase.duration})
+      .then(controller => controller.play());
+  }
 </script>
 
 <style>
@@ -81,10 +87,11 @@
     margin-left: 1em;
   }
   .phrase + .phrase {
-      margin-top: 0.7em;
+    margin-top: 0.7em;
   }
   .youtube {
-      flex-grow: 0;
+    flex-grow: 0;
+    cursor: pointer;
   }
   .collapse {
     max-height: 3em;
@@ -114,8 +121,8 @@
                    onSelect={(p) => onSelect('translation', p)}
   />
 
-  <div class="item youtube">
-<!--    <iframe class="{state.isVideoOpen ? '' : 'collapse'}" title="YouTube" src={phrase.youtubeLink}></iframe>-->
+  <div on:click={playYoutube} class="item youtube">
+    <div bind:this="{iframePlaceholder}"> Play </div>
   </div>
   <div on:click={deletePhrase} class="item action"> Delete </div>
 </li>

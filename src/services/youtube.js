@@ -37,6 +37,7 @@ export const analyzeLink = (link) => {
         return {
           text: sb.text,
           duration: sb.to - sb.from  + 1,
+          time: sb.from,
         };
       }
     }
@@ -100,7 +101,7 @@ export const analyzeLink = (link) => {
       const originSb = getTextByTime(originCaption, time);
       return {
         videoId,
-        time,
+        time: originSb.time,
         duration: originSb.duration,
         origin: originSb.text,
         translation: getTextByTime(translationCaption, time).text,
@@ -132,7 +133,7 @@ const getYoutubeIframeApi = () => new Promise( (resolve, reject) => {
 });
 
 
-export const initVideo = (placeholder, videoId, time = 0) => getYoutubeIframeApi().then((YT) => {
+export const initVideo = ({placeholder, videoId, time = 0, duration = 1}) => getYoutubeIframeApi().then((YT) => {
   return new Promise( resolve => {
     const controller = {};
 
@@ -151,9 +152,15 @@ export const initVideo = (placeholder, videoId, time = 0) => getYoutubeIframeApi
     });
 
     controller.player = player;
-    controller.play = ({fromSecond, duration}) => {
-      player.seekTo(fromSecond, true).playVideo();
-      setTimeout(() => player.pauseVideo(), duration * 1000);
+    controller.play = () => {
+      player.seekTo(time, true);
+      const intervalId = setInterval(() => {
+        if (player.getPlayerState() !== 1) return;
+
+        player.playVideo();
+        setTimeout(() => player.pauseVideo(), duration * 1000);
+        clearInterval(intervalId)
+      }, 200)
     };
   })
 });

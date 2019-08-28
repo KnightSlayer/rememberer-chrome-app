@@ -8,7 +8,7 @@
       newItemForm: getBlankPhrase(),
       isLoadingCaption: false,
       // videoLink: 'https://youtu.be/7_e0CA_nhaE?t=195',
-      videoLink: 'https://youtu.be/JyECrGp-Sw8?t=249', // Русские субтитры не подгрузились
+      videoLink: 'https://youtu.be/JyECrGp-Sw8?t=250', // Русские субтитры не подгрузились
   };
 
 
