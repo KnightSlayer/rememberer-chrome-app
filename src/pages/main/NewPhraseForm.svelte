@@ -7,7 +7,8 @@
   const state = {
       newItemForm: getBlankPhrase(),
       isLoadingCaption: false,
-      videoLink: 'https://youtu.be/7_e0CA_nhaE?t=195',
+      // videoLink: 'https://youtu.be/7_e0CA_nhaE?t=195',
+      videoLink: 'https://youtu.be/JyECrGp-Sw8?t=249', // Русские субтитры не подгрузились
   };
 
 
@@ -22,6 +23,10 @@
     analyzeLink(state.videoLink)
       .then(videoData => {
           state.isLoadingCaption = false;
+          state.newItemForm = {
+              ...state.newItemForm,
+              ...videoData,
+          };
           console.log('videoData', videoData)
       })
       .catch(() => {
@@ -32,7 +37,25 @@
 </script>
 
 <style>
+  .phraseForm {
+    width: 80%;
+    margin: auto;
+  }
+  .formRow {
+    display: flex;
+    justify-content: space-between;
 
+  }
+  .txtArea {
+    width: 48%;
+  }
+  .txtArea > div {
+    text-align: center;
+  }
+  .txtArea textarea {
+    width: 100%;
+    height: 5em;
+  }
 </style>
 
 
@@ -48,16 +71,28 @@
     {/if}
     </form>
 {:else}
-  <form on:submit|preventDefault={onAdd}>
-    <label>
-      Origin:
-      <textarea bind:value={state.newItemForm.origin}></textarea>
-    </label>
-    <label>
-      Translation:
-      <textarea bind:value={state.newItemForm.translation}></textarea>
-    </label>
+  <form on:submit|preventDefault={onAdd} class="phraseForm">
+    <div class="formRow">
+      <label class="txtArea">
+        <div> Origin: </div>
+        <textarea bind:value={state.newItemForm.origin}></textarea>
+      </label>
+      <label class="txtArea">
+        <div> Translation: </div>
+        <textarea bind:value={state.newItemForm.translation}></textarea>
+      </label>
+    </div>
 
-    <button> Add new phrase </button>
+    <div class="formRow">
+      <label>
+          Time
+          <input type="number" bind:value={state.newItemForm.time}>
+      </label>
+      <label>
+          Duration
+          <input type="number" bind:value={state.newItemForm.duration}>
+      </label>
+      <button> Add new phrase </button>
+    </div>
   </form>
 {/if}

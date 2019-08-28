@@ -34,7 +34,10 @@ export const analyzeLink = (link) => {
     // TODO: caption is sorted, so I can use here binary search later
     for (const sb of caption) {
       if (time >= sb.from && time <= sb.to) {
-        return sb.text;
+        return {
+          text: sb.text,
+          duration: sb.to - sb.from  + 1,
+        };
       }
     }
   }
@@ -85,6 +88,7 @@ export const analyzeLink = (link) => {
     })
       .then(r => r.text())
       .then(r => parseSbvCaption(r))
+      .then(captArr => captArr.filter(sb => sb.text))
   };
 
   return Promise.all([captionsIdsPromise, tokenPromise])
@@ -93,11 +97,13 @@ export const analyzeLink = (link) => {
       return Promise.all([downloadCaption(originCaptionId, token), downloadCaption(translationCaptionId, token)])
     })
     .then(([originCaption, translationCaption]) => {
+      const originSb = getTextByTime(originCaption, time);
       return {
         videoId,
         time,
-        origin: getTextByTime(originCaption, time),
-        translation: getTextByTime(translationCaption, time),
+        duration: originSb.duration,
+        origin: originSb.text,
+        translation: getTextByTime(translationCaption, time).text,
       };
     });
 };
