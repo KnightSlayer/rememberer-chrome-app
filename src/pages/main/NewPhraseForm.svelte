@@ -17,9 +17,15 @@
     state.newItemForm.origin = state.newItemForm.translation = state.newItemForm.youtubeLink = '';
   }
   function handleLink() {
+    state.isLoadingCaption = true;
+
     analyzeLink(state.videoLink)
       .then(videoData => {
+          state.isLoadingCaption = false;
           console.log('videoData', videoData)
+      })
+      .catch(() => {
+          state.isLoadingCaption = false;
       })
   }
 
@@ -37,7 +43,10 @@
       <input bind:value={state.videoLink}>
     </label>
     <button> Get Video </button>
-  </form>
+    {#if state.isLoadingCaption}
+      Processing...
+    {/if}
+    </form>
 {:else}
   <form on:submit|preventDefault={onAdd}>
     <label>
