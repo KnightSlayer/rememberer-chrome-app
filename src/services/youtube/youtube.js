@@ -1,4 +1,6 @@
-import { youtubeApiKey } from '../../keys'
+import { youtubeApiKey } from '../../../keys'
+import Caption from  './caption'
+import captionMock from './caption.example'
 
 const originLang = 'en';
 const translationLang = 'ru';
@@ -16,51 +18,9 @@ function googleTranslate ({q, source, target}) {
 googleTranslate({q: 'hello', source: 'en', target: 'ru'})
 
 export const analyzeLink = (link) => {
-  console.log('analyzeLink', link);
-  function parseSbvCaption(caption) {
-    function getSeconds(timeStr) {
-      const [, h, m, s] = timeStr.match(/^(\d):(\d\d):(\d\d)\.\d\d\d$/);
-
-      return +s + m*60 + h*3600;
-    }
-    let res = caption.split('\n\n')
-      .map( sub => sub.match(/(\d:\d\d:\d\d\.\d\d\d),(\d:\d\d:\d\d\.\d\d\d)\s*((.|\s)*)/))
-      .filter( matchRes => matchRes)
-      .map(matchRes => ({
-        from: getSeconds(matchRes[1]),
-        to: getSeconds(matchRes[2]),
-        text: matchRes[3].trim().replace(/\s+/g, ' '),
-      }));
-
-    return res;
-  };
-
-  function getSubIndex({caption, time}) {
-    // TODO: caption is sorted, so I can use here binary search later
-    for (const index in caption) {
-      if (time >= caption[index].from && time <= caption[index].to) {
-        return index;
-      }
-    }
-  }
-
-  function getTextAndTime({caption, fromIndex, toIndex}) {
-    let text = '';
-
-    for (let i = fromIndex; i <= toIndex; i++) {
-      text += caption[i].text;
-    }
-
-    return {
-      text,
-      startTime: caption[fromIndex].from,
-      duration: caption[toIndex].to - caption[fromIndex].from + 1,
-    }
-  }
-
   const [, videoId, time] = link.match(/youtu\.be\/(.*)\?t=(\d+)$/);
 
-  const captionsIdsPromise = fetch(getCapturesListEndpoint(videoId))
+  const getCaptionsIds = (videoId) => fetch(getCapturesListEndpoint(videoId))
     .then(r => r.json())
     .then(r => r.items)
     .then(captions => {
@@ -89,6 +49,7 @@ export const analyzeLink = (link) => {
       return {
         originCaptionId: originCaption.id,
         translationCaptionId: translationCaption.id,
+        guessedLang,
       }
     });
 
@@ -98,51 +59,59 @@ export const analyzeLink = (link) => {
   });
 
   const downloadCaption = (captionId, token) => {
-    return fetch(getCaptureDownloadEndpoint(captionId), {
-      headers: new Headers({
-        Authorization: 'Bearer ' + token,
-        Accept: 'application/json',
-      }),
-    })
-      .then(r => r.text())
-      .then(r => parseSbvCaption(r))
-      .then(captArr => captArr.filter(sb => sb.text))
+    // return fetch(getCaptureDownloadEndpoint(captionId), {
+    //   headers: new Headers({
+    //     Authorization: 'Bearer ' + token,
+    //     Accept: 'application/json',
+    //   }),
+    // })
+    //   .then(r => r.text())
+    return Promise.resolve(captionMock)
+      .then(r => Caption.parsePlain(r))
   };
 
-  return Promise.all([captionsIdsPromise, tokenPromise])
-    .then(([{originCaptionId, translationCaptionId}, token]) => {
+  return Promise.all([/*getCaptionsIds(videoId)*/ Promise.resolve({}), tokenPromise])
+    .then(([ { originCaptionId, translationCaptionId, guessedLang }, token ]) => {
 
-      return Promise.all([downloadCaption(originCaptionId, token), downloadCaption(translationCaptionId, token)])
+      return Promise.all([guessedLang, downloadCaption(originCaptionId, token), downloadCaption(translationCaptionId, token)])
     })
-    .then(([originCaption, translationCaption]) => {
-      const CaptionObj = function ({caption, time}) {
-        const initIndex = getSubIndex({caption, time});
-
-        const theEntity = {
-          indexFrom: initIndex,
-          indexTo: initIndex,
-        };
-        theEntity.getTextAndTime = () => getTextAndTime({caption, fromIndex: theEntity.indexFrom, toIndex: theEntity.indexTo});
-
-        return theEntity;
-      };
+    .then(([guessedLang, originCaption, translationCaption]) => {
       const captionsObject = {
-        origin: new CaptionObj({caption: originCaption, time}),
-        translation:  new CaptionObj({caption: translationCaption, time}),
+        origin: new Caption({caption: originCaption, time}),
+        translation:  new Caption({caption: translationCaption, time}),
+      };
+      const subscribers = [];
+
+      const onUpdate = () => {
+        const newData = videoObject.getData();
+        for (const cb of subscribers) {
+          cb(newData)
+        }
       };
 
       const videoObject = {
+        guessedLang,
+        videoId,
+        subscribe: (cb) => subscribers.push(cb),
         getData: () => {
           const originSb = captionsObject.origin.getTextAndTime();
 
           return {
-            videoId,
             time: originSb.startTime,
             duration: originSb.duration,
             origin: originSb.text,
             translation: captionsObject.translation.getTextAndTime().text,
           }
-        }
+        },
+        prepend: () => {
+          captionsObject.origin.prepend();
+          captionsObject.translation.prepend();
+        },
+        append: () => {
+          captionsObject.origin.append();
+          captionsObject.translation.append();
+          onUpdate();
+        },
       };
 
       return videoObject;

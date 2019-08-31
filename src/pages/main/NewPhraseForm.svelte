@@ -1,15 +1,15 @@
 <script>
   import phrases, { getBlankPhrase } from 'stores/phrases'
-  import { analyzeLink } from 'services/youtube'
+  import { analyzeLink } from 'services/youtube/youtube'
 
   const state = {
-      newItemForm: getBlankPhrase(),
-      isLoadingCaption: false,
-      videoObject: null,
-      videoLink: 'https://youtu.be/JyECrGp-Sw8?t=250', // канал - Ok
-      // videoLink: 'https://youtu.be/98TQv5IAtY8?t=222', // Не работает. 403. TED-ed канал не дает доступа к субтитрам
-      // videoLink: 'https://youtu.be/qhbuKbxJsk8?t=32', канал - Ok
-      // videoLink: 'https://youtu.be/kkmmDJD7QAE?t=32', канал - Ok
+    newItemForm: getBlankPhrase(),
+    isLoadingCaption: false,
+    videoObject: null,
+    videoLink: 'https://youtu.be/JyECrGp-Sw8?t=250', // канал - Ok
+    // videoLink: 'https://youtu.be/98TQv5IAtY8?t=222', // Не работает. 403. TED-ed канал не дает доступа к субтитрам
+    // videoLink: 'https://youtu.be/qhbuKbxJsk8?t=32', канал - Ok
+    // videoLink: 'https://youtu.be/kkmmDJD7QAE?t=32', канал - Ok
   };
 
   function onAdd() {
@@ -17,23 +17,32 @@
 
     state.newItemForm = getBlankPhrase();
     state.videoLink = '';
+    state.videoObject = null;
   }
   function handleLink() {
     state.isLoadingCaption = true;
 
     analyzeLink(state.videoLink)
       .then(videoObject => {
-          state.videoObject = videoObject;
-          state.isLoadingCaption = false;
+        state.videoObject = videoObject;
+        state.isLoadingCaption = false;
+        state.newItemForm = {
+          ...state.newItemForm,
+          videoId: videoObject.videoId,
+          ...videoObject.getData(),
+        };
+        console.log('videoObject', videoObject);
+
+        videoObject.subscribe((data) => {
           state.newItemForm = {
-              ...state.newItemForm,
-              ...videoObject.getData(),
+            ...state.newItemForm,
+            ...data,
           };
-          console.log('videoObject', videoObject)
+        })
       })
       .catch(() => {
-          state.isLoadingCaption = false;
-      })
+        state.isLoadingCaption = false;
+      });
   }
 
 </script>
@@ -86,13 +95,18 @@
     </div>
 
     <div class="formRow">
+      <button on:click|preventDefault={state.videoObject.prepend}> Prepend </button>
+      <button on:click|preventDefault={state.videoObject.append}> Append </button>
+    </div>
+
+    <div class="formRow">
       <label>
-          Time
-          <input type="number" bind:value={state.newItemForm.time}>
+        Time
+        <input type="number" bind:value={state.newItemForm.time}>
       </label>
       <label>
-          Duration
-          <input type="number" bind:value={state.newItemForm.duration}>
+        Duration
+        <input type="number" bind:value={state.newItemForm.duration}>
       </label>
       <button> Add new phrase </button>
     </div>
