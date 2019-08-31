@@ -20,6 +20,7 @@ export const getBlankPhrase = () => ({
     back: [],
     forward: [],
   },
+  // createdAt: 123412412,
 });
 
 const phraseActions = {
@@ -56,7 +57,10 @@ function createPhrases() {
     subscribe,
     add: (phrase) => update(phrases => {
       const newPhrases = {
-        [generateGuid()]: {...phrase},
+        [generateGuid()]: {
+          ...phrase,
+          createdAt: (+new Date()),
+        },
         ...phrases,
       };
 
