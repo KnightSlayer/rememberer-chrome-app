@@ -106,6 +106,7 @@ export const analyzeLink = (link) => {
         prepend: () => {
           captionsObject.origin.prepend();
           captionsObject.translation.prepend();
+          onUpdate();
         },
         append: () => {
           captionsObject.origin.append();
