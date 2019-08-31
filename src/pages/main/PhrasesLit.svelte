@@ -2,7 +2,7 @@
   import Phrase from './Phrase.svelte';
   import phrases from 'stores/phrases'
 
-  $: prhasesIds = Object.keys($phrases);
+  $: prhasesIds = Object.keys($phrases).sort((a, b) => $phrases[b].createdAt - $phrases[a].createdAt);
 
 </script>
 
