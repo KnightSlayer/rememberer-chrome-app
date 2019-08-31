@@ -1,7 +1,7 @@
 <script>
   import phrases, {sortHighlights} from 'stores/phrases'
   import PhraseTextField from './PhraseTextField.svelte'
-  import { initVideo } from 'services/youtube/youtube'
+  import { initVideo } from 'services/youtube/iframeController'
 
   export let phraseId;
   export let phrase;
