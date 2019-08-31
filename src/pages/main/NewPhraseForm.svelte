@@ -2,17 +2,15 @@
   import phrases, { getBlankPhrase } from 'stores/phrases'
   import { analyzeLink } from 'services/youtube'
 
-  // https://youtu.be/7_e0CA_nhaE?t=195
-
   const state = {
       newItemForm: getBlankPhrase(),
       isLoadingCaption: false,
+      videoObject: null,
       videoLink: 'https://youtu.be/JyECrGp-Sw8?t=250', // канал - Ok
       // videoLink: 'https://youtu.be/98TQv5IAtY8?t=222', // Не работает. 403. TED-ed канал не дает доступа к субтитрам
       // videoLink: 'https://youtu.be/qhbuKbxJsk8?t=32', канал - Ok
       // videoLink: 'https://youtu.be/kkmmDJD7QAE?t=32', канал - Ok
   };
-
 
   function onAdd() {
     phrases.add(state.newItemForm);
@@ -24,13 +22,14 @@
     state.isLoadingCaption = true;
 
     analyzeLink(state.videoLink)
-      .then(videoData => {
+      .then(videoObject => {
+          state.videoObject = videoObject;
           state.isLoadingCaption = false;
           state.newItemForm = {
               ...state.newItemForm,
-              ...videoData,
+              ...videoObject.getData(),
           };
-          console.log('videoData', videoData)
+          console.log('videoObject', videoObject)
       })
       .catch(() => {
           state.isLoadingCaption = false;
