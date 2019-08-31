@@ -7,16 +7,18 @@
   const state = {
       newItemForm: getBlankPhrase(),
       isLoadingCaption: false,
-      // videoLink: 'https://youtu.be/7_e0CA_nhaE?t=195',
-      videoLink: 'https://youtu.be/JyECrGp-Sw8?t=250', // Русские субтитры не подгрузились
+      videoLink: 'https://youtu.be/JyECrGp-Sw8?t=250', // канал - Ok
       // videoLink: 'https://youtu.be/98TQv5IAtY8?t=222', // Не работает. 403. TED-ed канал не дает доступа к субтитрам
+      // videoLink: 'https://youtu.be/qhbuKbxJsk8?t=32', канал - Ok
+      // videoLink: 'https://youtu.be/kkmmDJD7QAE?t=32', канал - Ok
   };
 
 
   function onAdd() {
     phrases.add(state.newItemForm);
 
-    state.newItemForm.origin = state.newItemForm.translation = state.newItemForm.youtubeLink = '';
+    state.newItemForm = getBlankPhrase();
+    state.videoLink = '';
   }
   function handleLink() {
     state.isLoadingCaption = true;
