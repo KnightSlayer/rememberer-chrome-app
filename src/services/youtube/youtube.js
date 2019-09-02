@@ -24,12 +24,12 @@ export const analyzeLink = (link) => {
     .then(r => r.json())
     .then(r => r.items)
     .then(captions => {
-      let guessedLang, originCaption, translationCaption;
+      let guessedLang, originCaptionId, translationCaptionId;
 
       for (const caption of captions) {
         // if generated automatic speech
         if (caption.snippet.trackKind == 'ASR') {
-          originCaption = caption;
+          originCaptionId = caption.id;
           guessedLang = caption.snippet.language;
           break;
         }
@@ -39,16 +39,16 @@ export const analyzeLink = (link) => {
 
       for (const caption of captions) {
         if (caption.snippet.trackKind != 'ASR' && caption.snippet.language == fromLang) {
-          originCaption = caption;
+          originCaptionId = caption.Id;
         }
         if (caption.snippet.language == translationLang) {
-          translationCaption = caption;
+          translationCaptionId = caption.id;
         }
       }
 
       return {
-        originCaptionId: originCaption.id,
-        translationCaptionId: translationCaption.id,
+        originCaptionId,
+        translationCaptionId,
         guessedLang,
       }
     });
@@ -59,6 +59,8 @@ export const analyzeLink = (link) => {
   });
 
   const downloadCaption = (captionId, token) => {
+    // if (!captionId) return null;
+
     // return fetch(getCaptureDownloadEndpoint(captionId), {
     //   headers: new Headers({
     //     Authorization: 'Bearer ' + token,
@@ -76,10 +78,8 @@ export const analyzeLink = (link) => {
       return Promise.all([guessedLang, downloadCaption(originCaptionId, token), downloadCaption(translationCaptionId, token)])
     })
     .then(([guessedLang, originCaption, translationCaption]) => {
-      const captionsObject = {
-        origin: new Caption({caption: originCaption, time}),
-        translation:  new Caption({caption: translationCaption, time}),
-      };
+      const originController = new Caption({caption: originCaption, time});
+      const translationController = new Caption({caption: translationCaption, time});
       const subscribers = [];
 
       const onUpdate = () => {
@@ -94,23 +94,23 @@ export const analyzeLink = (link) => {
         videoId,
         subscribe: (cb) => subscribers.push(cb),
         getData: () => {
-          const originSb = captionsObject.origin.getTextAndTime();
+          const originSb = originController.getTextAndTime();
 
           return {
             time: originSb.startTime,
             duration: originSb.duration,
             origin: originSb.text,
-            translation: captionsObject.translation.getTextAndTime().text,
+            translation: translationController.getTextAndTime().text,
           }
         },
         prepend: () => {
-          captionsObject.origin.prepend();
-          captionsObject.translation.prepend();
+          originController.prepend();
+          translationController.prepend();
           onUpdate();
         },
         append: () => {
-          captionsObject.origin.append();
-          captionsObject.translation.append();
+          originController.append();
+          translationController.append();
           onUpdate();
         },
       };

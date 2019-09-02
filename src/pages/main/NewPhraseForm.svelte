@@ -6,10 +6,11 @@
     newItemForm: getBlankPhrase(),
     isLoadingCaption: false,
     videoObject: null,
-    videoLink: 'https://youtu.be/JyECrGp-Sw8?t=250', // канал - Ok
+    // videoLink: 'https://youtu.be/JyECrGp-Sw8?t=250', // канал - Ok
     // videoLink: 'https://youtu.be/98TQv5IAtY8?t=222', // Не работает. 403. TED-ed канал не дает доступа к субтитрам
-    // videoLink: 'https://youtu.be/qhbuKbxJsk8?t=32', канал - Ok
-    // videoLink: 'https://youtu.be/kkmmDJD7QAE?t=32', канал - Ok
+    // videoLink: 'https://youtu.be/qhbuKbxJsk8?t=32', // канал - Ok
+    // videoLink: 'https://youtu.be/kkmmDJD7QAE?t=32', // канал - Ok
+    videoLink: 'https://youtu.be/H3DN6hKh_EA?t=298', // только ASR субтитры
   };
 
   function onAdd() {
