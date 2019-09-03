@@ -28,14 +28,19 @@ export const initVideo = ({placeholder, videoId, time = 0, duration = 1}) => get
       }
     });
 
+    let intervalId, timeoutId;
     controller.player = player;
     controller.play = () => {
-      player.seekTo(time, true);
-      const intervalId = setInterval(() => {
-        if (player.getPlayerState() !== 1) return;
+      clearInterval(intervalId);
+      clearTimeout(timeoutId);
 
-        player.playVideo();
-        setTimeout(() => player.pauseVideo(), duration * 1000);
+      player.seekTo(time, true);
+      player.playVideo();
+      intervalId = setInterval(() => {
+        const s = player.getPlayerState();
+
+        if (s !== 1) return;
+        timeoutId = setTimeout(() => player.pauseVideo(), duration * 1000);
         clearInterval(intervalId)
       }, 200)
     };

@@ -21,6 +21,7 @@
     },
   };
 
+  let player;
   let iframePlaceholder;
   $: sortedHighlights = sortHighlights(phrase.highlights);
 
@@ -65,9 +66,21 @@
   function deletePhrase() {
     phrases.delete(phraseId);
   }
+
   function playYoutube() {
-    initVideo({placeholder: iframePlaceholder, videoId: phrase.videoId, time: phrase.time, duration: phrase.duration})
-      .then(controller => controller.play());
+    state.isVideoOpen = true;
+
+    setTimeout(
+      () => initVideo({placeholder: iframePlaceholder, videoId: phrase.videoId, time: phrase.time, duration: phrase.duration})
+              .then(controller => {
+                player = controller;
+                player.play()
+              })
+    );
+  }
+  function replay() {
+    console.log('player', player);
+    player.play();
   }
 </script>
 
@@ -91,11 +104,13 @@
   }
   .youtube {
     flex-grow: 0;
-    cursor: pointer;
   }
-  .collapse {
-    max-height: 3em;
-    max-width: 5em;
+  .playerControls {
+    display: flex;
+    justify-content: space-between;
+  }
+  .playerControls div {
+    cursor: pointer;
   }
   .action {
     flex-grow: 0;
@@ -121,8 +136,18 @@
                    onSelect={(p) => onSelect('translation', p)}
   />
 
-  <div on:click={playYoutube} class="item youtube">
-    <div bind:this="{iframePlaceholder}"> Play </div>
+  <div class="item youtube">
+    {#if state.isVideoOpen}
+      <div class="playerControls">
+        <div on:click={replay}>Replay</div>
+        <div on:click={ () => state.isVideoOpen = false }>Close</div>
+      </div>
+      <div>
+        <div bind:this="{iframePlaceholder}"> Player placeholder </div>
+      </div>
+    {:else}
+      <div on:click={playYoutube}> Play </div>
+    {/if}
   </div>
   <div on:click={deletePhrase} class="item action"> Delete </div>
 </li>

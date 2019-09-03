@@ -51,7 +51,7 @@ export const analyzeLink = (link) => {
   });
 
   const downloadCaption = (captionId, token) => {
-    // if (!captionId) return null;
+    if (!captionId) return null;
 
     // return fetch(getCaptureDownloadEndpoint(captionId), {
     //   headers: new Headers({
