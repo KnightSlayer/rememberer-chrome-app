@@ -10,7 +10,7 @@ const getCaptureDownloadEndpoint = (captionId) => `https://www.googleapis.com/yo
 
 
 export const analyzeLink = (link) => {
-  const [, videoId, time] = link.match(/youtu\.be\/(.*)\?t=(\d+)$/);
+  const [, videoId, time] = link.match(/youtu\.be\/(.*)\?.*t=(\d+)$/);
 
   const getCaptionsIds = (videoId) => fetch(getCapturesListEndpoint(videoId))
     .then(r => r.json())
@@ -31,7 +31,7 @@ export const analyzeLink = (link) => {
 
       for (const caption of captions) {
         if (caption.snippet.trackKind != 'ASR' && caption.snippet.language == fromLang) {
-          originCaptionId = caption.Id;
+          originCaptionId = caption.id;
         }
         if (caption.snippet.language == translationLang) {
           translationCaptionId = caption.id;
@@ -53,18 +53,20 @@ export const analyzeLink = (link) => {
   const downloadCaption = (captionId, token) => {
     if (!captionId) return null;
 
-    // return fetch(getCaptureDownloadEndpoint(captionId), {
-    //   headers: new Headers({
-    //     Authorization: 'Bearer ' + token,
-    //     Accept: 'application/json',
-    //   }),
-    // })
-    //   .then(r => r.text())
-    return Promise.resolve(captionMock)
-      .then(r => Caption.parsePlain(r))
+    return fetch(getCaptureDownloadEndpoint(captionId), {
+      headers: new Headers({
+        Authorization: 'Bearer ' + token,
+        Accept: 'application/json',
+      }),
+    })
+      .then(r => r.text())
+      .then(r => Caption.parsePlain(r));
+
+    // return Promise.resolve(captionMock)
+    //   .then(r => Caption.parsePlain(r))
   };
 
-  return Promise.all([/*getCaptionsIds(videoId)*/ Promise.resolve({}), tokenPromise])
+  return Promise.all([getCaptionsIds(videoId)/* Promise.resolve({})*/, tokenPromise])
     .then(([ { originCaptionId, translationCaptionId, guessedLang }, token ]) => {
 
       return Promise.all([guessedLang, downloadCaption(originCaptionId, token), downloadCaption(translationCaptionId, token)])

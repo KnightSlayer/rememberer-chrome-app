@@ -10,7 +10,8 @@
     // videoLink: 'https://youtu.be/98TQv5IAtY8?t=222', // Не работает. 403. TED-ed канал не дает доступа к субтитрам
     // videoLink: 'https://youtu.be/qhbuKbxJsk8?t=32', // канал - Ok
     // videoLink: 'https://youtu.be/kkmmDJD7QAE?t=32', // канал - Ok
-    videoLink: 'https://youtu.be/H3DN6hKh_EA?t=298', // только ASR субтитры
+    videoLink: '',
+    // videoLink: 'https://youtu.be/Yocja_N5s1I?list=PLBDA2E52FB1EF80C9&t=323',
   };
 
   function onAdd() {
@@ -41,8 +42,9 @@
           };
         })
       })
-      .catch(() => {
+      .catch((e) => {
         state.isLoadingCaption = false;
+        console.log('err', e)
       });
   }
 
