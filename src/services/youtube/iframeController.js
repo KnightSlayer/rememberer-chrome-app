@@ -1,4 +1,6 @@
 const getYoutubeIframeApi = () => new Promise( (resolve, reject) => {
+  if (window.YT) return resolve(window.YT);
+
   // TODO: remove lib and do nativly
   const tag = document.createElement('script');
   tag.onencrypted = () => reject();
