@@ -1,6 +1,7 @@
 import { youtubeApiKey } from '../../../keys'
 import Caption from  './caption'
 import captionMock from './caption.example'
+import googleTranslate from "../translation";
 
 const originLang = 'en';
 const translationLang = 'ru';
@@ -9,62 +10,62 @@ const getCapturesListEndpoint = (videoId) => `https://content.googleapis.com/you
 const getCaptureDownloadEndpoint = (captionId) => `https://www.googleapis.com/youtube/v3/captions/${captionId}?key=${youtubeApiKey}&tfmt=sbv`;
 
 
-export const analyzeLink = (link) => {
-  const [, videoId, time] = link.match(/youtu\.be\/(.*)\?.*t=(\d+)$/);
+const getCaptionsIds = (videoId) => fetch(getCapturesListEndpoint(videoId))
+  .then(r => r.json())
+  .then(r => r.items)
+  .then(captions => {
+    let guessedLang, originCaptionId, translationCaptionId;
 
-  const getCaptionsIds = (videoId) => fetch(getCapturesListEndpoint(videoId))
-    .then(r => r.json())
-    .then(r => r.items)
-    .then(captions => {
-      let guessedLang, originCaptionId, translationCaptionId;
-
-      for (const caption of captions) {
-        // if generated automatic speech
-        if (caption.snippet.trackKind == 'ASR') {
-          originCaptionId = caption.id;
-          guessedLang = caption.snippet.language;
-          break;
-        }
+    for (const caption of captions) {
+      // if generated automatic speech
+      if (caption.snippet.trackKind == 'ASR') {
+        originCaptionId = caption.id;
+        guessedLang = caption.snippet.language;
+        break;
       }
+    }
 
-      const fromLang = originLang || guessedLang;
+    const fromLang = originLang || guessedLang;
 
-      for (const caption of captions) {
-        if (caption.snippet.trackKind != 'ASR' && caption.snippet.language == fromLang) {
-          originCaptionId = caption.id;
-        }
-        if (caption.snippet.language == translationLang) {
-          translationCaptionId = caption.id;
-        }
+    for (const caption of captions) {
+      if (caption.snippet.trackKind != 'ASR' && caption.snippet.language == fromLang) {
+        originCaptionId = caption.id;
       }
-
-      return {
-        originCaptionId,
-        translationCaptionId,
-        guessedLang,
+      if (caption.snippet.language == translationLang) {
+        translationCaptionId = caption.id;
       }
-    });
+    }
 
-  const tokenPromise = new Promise((resolve, reject) => {
-    // We are serverless, so we need to asc users connect their account???
-    chrome.identity.getAuthToken({'interactive': true}, (token) => resolve(token))
+    return {
+      originCaptionId,
+      translationCaptionId,
+      guessedLang,
+    }
   });
 
-  const downloadCaption = (captionId, token) => {
-    if (!captionId) return null;
+const tokenPromise = new Promise((resolve, reject) => {
+  // We are serverless, so we need to asc users connect their account???
+  chrome.identity.getAuthToken({'interactive': true}, (token) => resolve(token))
+});
 
-    return fetch(getCaptureDownloadEndpoint(captionId), {
-      headers: new Headers({
-        Authorization: 'Bearer ' + token,
-        Accept: 'application/json',
-      }),
-    })
-      .then(r => r.text())
-      .then(r => Caption.parsePlain(r));
+const downloadCaption = (captionId, token) => {
+  if (!captionId) return null;
 
-    // return Promise.resolve(captionMock)
-    //   .then(r => Caption.parsePlain(r))
-  };
+  return fetch(getCaptureDownloadEndpoint(captionId), {
+    headers: new Headers({
+      Authorization: 'Bearer ' + token,
+      Accept: 'application/json',
+    }),
+  })
+    .then(r => r.text())
+    .then(r => Caption.parsePlain(r));
+
+  // return Promise.resolve(captionMock)
+  //   .then(r => Caption.parsePlain(r))
+};
+
+export const analyzeLink = (link) => {
+  const [, videoId, time] = link.match(/youtu\.be\/(.*)\?.*t=(\d+)$/);
 
   return Promise.all([getCaptionsIds(videoId)/* Promise.resolve({})*/, tokenPromise])
     .then(([ { originCaptionId, translationCaptionId, guessedLang }, token ]) => {
@@ -89,6 +90,8 @@ export const analyzeLink = (link) => {
         subscribe: (cb) => subscribers.push(cb),
         getData: () => {
           const originSb = originController.getTextAndTime();
+          googleTranslate({q: originSb.text})
+            .then( t => console.log('t', t));
 
           return {
             time: originSb.startTime,

@@ -1,13 +1,16 @@
+// caption - то, что вернет Caption.parsePlain
+// time - int, секунды. // TODO: переделать на float
 function Caption({caption, time}) {
   const initIndex = Caption.getSubIndex({caption, time});
 
   const theEntity = {
     indexFrom: initIndex,
     indexTo: initIndex,
+
+    getTextAndTime: () => Caption.getTextAndTime({caption, fromIndex: theEntity.indexFrom, toIndex: theEntity.indexTo}),
+    prepend: () => theEntity.indexFrom = Math.max(theEntity.indexFrom - 1, 0),
+    append: () => theEntity.indexTo = Math.min(+theEntity.indexTo + 1, caption.length - 1)
   };
-  theEntity.getTextAndTime = () => Caption.getTextAndTime({caption, fromIndex: theEntity.indexFrom, toIndex: theEntity.indexTo});
-  theEntity.prepend = () => theEntity.indexFrom = Math.max(theEntity.indexFrom - 1, 0);
-  theEntity.append = () => theEntity.indexTo = Math.min(+theEntity.indexTo + 1, caption.length - 1);
 
   return theEntity;
 };
